@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZeesWM Payment v5</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+:root{
+    --blue:#3b82f6;
+    --dark:#111;
+    --light:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
+body{
+    background:#0f0f0f;
+    color:white;
+    display:flex;
+    justify-content:center;
+    min-height:100vh;
+}
+.app{
+    width:100%;
+    max-width:420px;
+    padding:20px;
+}
+.profile{
+    text-align:center;
+    margin-bottom:30px;
+}
+.avatar{
+    width:110px;height:110px;border-radius:50%;
+    border:4px solid white;object-fit:cover;
+}
+.username{font-size:28px;font-weight:700;margin-top:10px}
+.handle{color:#c7d2fe;margin-bottom:10px}
+.desc{font-size:14px;color:#e5e7eb}
+.methods{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    margin-top:25px;
+}
+.btn{
+    background:white;
+    color:#111;
+    padding:18px;
+    border-radius:14px;
+    border:none;
+    font-size:16px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    cursor:pointer;
+}
+.btn:active{transform:scale(.97)}
+
+/* NOTIFICATION */
+.notif{
+    position:fixed;
+    top:20px;
+    right:20px;
+    background:#16a34a;
+    color:white;
+    padding:14px 18px;
+    border-radius:12px;
+    display:none;
+    z-index:999;
+    font-size:14px;
+}
+
+/* MODAL */
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:99;
+}
+.modal.active{display:flex}
+.box{
+    background:white;
+    color:#111;
+    width:100%;
+    max-width:360px;
+    border-radius:20px;
+    padding:25px;
+}
+.box h3{text-align:center;margin-bottom:20px}
+.pay-item{
+    background:#f3f4f6;
+    padding:15px;
+    border-radius:14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+}
+.copy{
+    background:#111;color:white;
+    border:none;border-radius:10px;
+    width:40px;height:40px;
+    cursor:pointer;
+}
+.close{
+    margin-top:15px;
+    width:100%;
+    padding:14px;
+    background:#111;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+/* CHAT */
+.chat{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+}
+.chat-btn{
+    width:60px;height:60px;
+    background:var(--blue);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    color:white;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="notif" id="notifBox">Transaksi dipilih!</div>
+
+<div class="app">
+    <div class="profile">
+        <img src="foto4.jpg" class="avatar">
+        <div class="username">ZeesWM</div>
+        <div class="handle">@zeeswm <i class="ri-verified-badge-fill"></i></div>
+        <div class="desc">
+            Pilih metode pembayaran di bawah ini. Aman, cepat, dan terpercaya.
+        </div>
+    </div>
+
+    <div class="methods">
+        <button class="btn" onclick="openPay('DANA / ShopeePay')">
+            <i class="ri-wallet-3-line"></i> DANA / ShopeePay
+        </button>
+        <button class="btn" onclick="openPay('BANK')">
+            <i class="ri-bank-card-line"></i> BANK
+        </button>
+        <button class="btn" onclick="openPay('PULSA')">
+            <i class="ri-phone-line"></i> PULSA
+        </button>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="payModal">
+    <div class="box">
+        <h3 id="payTitle">Pembayaran</h3>
+
+        <div class="pay-item">
+            <div>
+                <strong id="payName">DANA</strong><br>
+                <span id="payNumber">0895410064958</span>
+            </div>
+            <button class="copy" onclick="copyText()">
+                <i class="ri-file-copy-line"></i>
+            </button>
+        </div>
+
+        <button class="close" onclick="closePay()">Tutup</button>
+    </div>
+</div>
+
+<!-- CHAT -->
+<div class="chat">
+    <div class="chat-btn" onclick="chatAdmin()">
+        <i class="ri-chat-3-line"></i>
+    </div>
+</div>
+
+<script>
+const adminWA = "62895410064958";
+let currentNumber = "0895410064958";
+
+function showNotif(text){
+    const box = document.getElementById("notifBox");
+    box.innerText = text;
+    box.style.display = "block";
+    setTimeout(()=>box.style.display="none",2500);
+}
+
+function openPay(type){
+    document.getElementById("payModal").classList.add("active");
+    document.getElementById("payTitle").innerText = type + " Payment";
+    document.getElementById("payName").innerText = type;
+    document.getElementById("payNumber").innerText = currentNumber;
+    showNotif("Metode " + type + " dipilih");
+}
+
+function closePay(){
+    document.getElementById("payModal").classList.remove("active");
+}
+
+function copyText(){
+    navigator.clipboard.writeText(currentNumber);
+    showNotif("Nomor berhasil disalin");
+}
+
+function chatAdmin(){
+    window.open("https://wa.me/" + adminWA,"_blank");
+}
+</script>
+
+</body>
+</html>
